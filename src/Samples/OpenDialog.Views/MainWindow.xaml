@@ -1,0 +1,17 @@
+﻿<Window x:Class="OpenDialog.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OpenDialog.Views"
+        mc:Ignorable="d"
+        Title="Apply culture" Height="246.35" Width="880.474">
+    <Grid>
+        <Border Margin="10,10,10,0" BorderThickness="5" Height="115" VerticalAlignment="Top" BorderBrush="Black">
+            <TextBlock Text="{Binding TimeStamp}" TextWrapping="Wrap" FontSize="48" Margin="0,0,0,0" TextAlignment="Center"/>
+        </Border>
+        <Button Content="Change culture with a dialog sharing the update loop" Command="{Binding CallSameLoopDialog}" HorizontalAlignment="Left" Margin="136,157,0,0" VerticalAlignment="Top" Width="328" Height="35"/>
+        <Button Content="Reset culture" Command="{Binding Reset}" HorizontalAlignment="Left" Margin="10,157,0,0" VerticalAlignment="Top" Width="75" Height="35"/>
+        <Button Content="Change culture with a dialog having its own loop" Command="{Binding CallSelfLoopDialog}" HorizontalAlignment="Left" Height="35" Margin="515,157,0,0" VerticalAlignment="Top" Width="332"/>
+    </Grid>
+</Window>

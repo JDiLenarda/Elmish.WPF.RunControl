@@ -1,0 +1,14 @@
+﻿<Window x:Class="OpenDialog.Views.CultureSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Elmish.Dialog.Tests.Views"
+        mc:Ignorable="d"
+        Title="Select a culture" Height="160.168" Width="234.304">
+    <Grid >
+        <Button Content="OK" IsDefault="True" Margin="156,85,0,0" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Click="Button_Click" RenderTransformOrigin="0.544,-0.644"/>
+        <Button Content="Cancel" IsCancel="True" Margin="60,85,0,0" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" Width="77"/>
+        <ComboBox ItemsSource="{Binding Cultures}" SelectedItem="{Binding SelectedCulture}" HorizontalAlignment="Left" Height="35" Margin="8,10,0,0" VerticalAlignment="Top" Width="171"/>
+    </Grid>
+</Window>
