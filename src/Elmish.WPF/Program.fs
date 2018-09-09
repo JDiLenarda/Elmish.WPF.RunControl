@@ -4,11 +4,11 @@ module Elmish.WPF.Program
 open System.Windows
 open Elmish
 open Elmish.WPF.Internal
-open System.Windows.Controls
 
-let private run
+// Start Elmish dispatch loop
+let private startLoop
     (config: ElmConfig)
-    (uiElement: FrameworkElement)  //(window: Window)
+    (element: FrameworkElement)
     (programRun: Program<'t, 'model, 'msg, BindingSpec<'model, 'msg> list> -> unit)
     (program: Program<'t, 'model, 'msg, BindingSpec<'model, 'msg> list>)
     (uiDispatcher: Threading.Dispatcher) =
@@ -19,32 +19,34 @@ let private run
     | None ->
         let mapping = program.view model dispatch
         let vm = ViewModel<'model,'msg>(model, dispatch, mapping, config, uiDispatcher)
-        uiElement.DataContext <- vm
+        element.DataContext <- box vm
         lastModel <- Some vm
     | Some vm ->
         vm.UpdateModel model
 
-  // Start Elmish dispatch loop
   programRun { program with setState = setState }
 
-  match uiElement with
-  | :? Window as window ->
-    // Start WPF dispatch loop
-    let app = if isNull Application.Current then Application() else Application.Current
-    app.Run window
-  | _ -> 0
+ // Start WPF dispatch loop. Blocking function.
+let private startApp window =
+  let app = if isNull Application.Current then Application() else Application.Current
+  app.Run window
 
 /// Starts both Elmish and WPF dispatch loops. Blocking function.
 let runWindow window program =
-  run ElmConfig.Default window Elmish.Program.run program window.Dispatcher
+  startLoop ElmConfig.Default window Elmish.Program.run program window.Dispatcher
+  startApp window
 
 /// Starts both Elmish and WPF dispatch loops with the specified configuration.
-/// Blocking function.
 let runWindowWithConfig config window program =
-  run config window Elmish.Program.run program window.Dispatcher
+  startLoop config window Elmish.Program.run program window.Dispatcher
+  startApp window
 
-let runUserControl (control: UserControl) program =
-  run ElmConfig.Default control Elmish.Program.run program control.Dispatcher
+/// start an Elmish dispatch loop and bind it to a framework element, such as window or a user control
+let bindFrameWorkElement element program =
+  startLoop ElmConfig.Default element Elmish.Program.run program element.Dispatcher
 
-let runUserControlWithConfig config (control: UserControl) program =
-  run config control Elmish.Program.run program control.Dispatcher
+/// start an Elmish dispatch loop and bind it to a framework element, such as window or a user control, with the specified configuration.
+let bindFrameWorkElementWithConfig config element program =
+  startLoop config element Elmish.Program.run program element.Dispatcher
+
+
