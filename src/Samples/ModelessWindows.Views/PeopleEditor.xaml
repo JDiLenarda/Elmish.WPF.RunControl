@@ -1,0 +1,28 @@
+﻿<Window x:Class="ModelessWindows.Views.PeopleEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ModelessWindows.Views"
+        mc:Ignorable="d"
+        Title="People editor" Height="138.78" Width="442.212" >
+    <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+        <Label Content="Nick Name"/>
+        <TextBox Text="{Binding NickName}" Grid.Column="2" Margin="3"/>
+        <Label Content="First Name" Grid.Row="1"/>
+        <TextBox Text="{Binding FirstName}" Grid.Column="2" Grid.Row="1" Margin="3"/>
+        <Label Content="Last Name" Grid.Row="2"/>
+        <TextBox Text="{Binding LastName}" Grid.Column="2" Grid.Row="2" Margin="3"/>
+        <TextBox Text="{Binding Id, Mode=OneWay}" IsEnabled="False" Grid.Row="3" Grid.ColumnSpan="2" Margin="3"/>
+    </Grid>
+</Window>

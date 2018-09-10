@@ -8,6 +8,9 @@ open System.ComponentModel
 open System.Windows
 open Elmish.WPF
 
+type [<AllowNullLiteral>] IGetInder =
+  abstract member GetIndexer: string -> (obj -> obj) option
+
 /// Represents all necessary data used in an active binding.
 type Binding<'model, 'msg> =
   | OneWay of get: ('model -> obj)
@@ -340,6 +343,15 @@ and [<AllowNullLiteral>] ViewModel<'model, 'msg>
     // This function should always return false, otherwise the UI may execute a
     // subsequent get which may may return the old value
     false
+
+  interface IGetInder with
+    member __.GetIndexer name =
+      match bindings.TryGetValue name with
+      | false, _ ->
+          log "[VM] GetIndexer FAILED: Property %s doesn't exist" name
+          None
+      | true, SubModelSeq (_, _, getId, _, _) -> Some getId
+      | _ -> None
 
   interface INotifyPropertyChanged with
     [<CLIEvent>]

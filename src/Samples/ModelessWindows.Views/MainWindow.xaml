@@ -1,0 +1,25 @@
+﻿<Window x:Class="ModelessWindows.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ModelessWindows.Views"
+        mc:Ignorable="d"
+        Title="People who took part to issue #24" Height="450" Width="800">
+    <Grid>
+    <Grid.Resources>
+      <DataTemplate x:Key="Edit">
+        <Button Content="Edit..." Command="{Binding CallEditor}" />
+      </DataTemplate>
+    </Grid.Resources>
+    <DataGrid ItemsSource="{Binding Persons}" IsReadOnly="True" Margin="10" AutoGenerateColumns="False">
+      <DataGrid.Columns>
+        <DataGridTextColumn Binding="{Binding NickName}" Header="Nick name" Width="2*"/>
+        <DataGridTextColumn Binding="{Binding FirstName}" Header="First name" Width="2*"/>
+        <DataGridTextColumn Binding="{Binding LastName}" Header="Last name" Width="2*"/>
+        <DataGridTemplateColumn CellTemplate="{StaticResource Edit}" Width="1*"/>
+        <DataGridTextColumn Binding="{Binding Id}" Header="Guid" Width="3*"/>
+      </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

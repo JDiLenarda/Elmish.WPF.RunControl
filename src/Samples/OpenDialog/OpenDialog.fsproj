@@ -5,7 +5,7 @@
     <TargetFramework>net471</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETFRAMEWORK;NET471;EXPERIMENTAL_BRANCH</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFRAMEWORK;NET471;</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.fs" />
