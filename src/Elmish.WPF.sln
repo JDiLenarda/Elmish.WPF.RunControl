@@ -42,9 +42,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubModelOpt.Views", "Sample
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Elmish.WPF.Tests", "Elmish.WPF.Tests\Elmish.WPF.Tests.fsproj", "{54DFF909-F5DF-48A9-B57D-E57B0EE743FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDialog.Views", "Samples\OpenDialog.Views\OpenDialog.Views.csproj", "{21FD76C3-D615-4CB1-84AF-74BFAF5EEFD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenDialog.Views", "Samples\OpenDialog.Views\OpenDialog.Views.csproj", "{21FD76C3-D615-4CB1-84AF-74BFAF5EEFD1}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "OpenDialog", "Samples\OpenDialog\OpenDialog.fsproj", "{4E32B48C-C944-477C-BB4A-F9B495A8C3AD}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "OpenDialog", "Samples\OpenDialog\OpenDialog.fsproj", "{4E32B48C-C944-477C-BB4A-F9B495A8C3AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelessWindows.Views", "Samples\ModelessWindows.Views\ModelessWindows.Views.csproj", "{7CA2A585-2385-46C7-9B0C-0BD11F205FD7}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ModelessWindows.SharedLoop", "Samples\ModelessWindows\ModelessWindows.SharedLoop.fsproj", "{C2224366-5957-4047-9EE8-EE7C45DC7EA4}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ModelessWindows.SeparatedLoop", "Samples\ModelessWindows.SeparatedLoop\ModelessWindows.SeparatedLoop.fsproj", "{4FA1B47F-999A-4B24-97B8-10C232109FA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -124,6 +130,18 @@ Global
 		{4E32B48C-C944-477C-BB4A-F9B495A8C3AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E32B48C-C944-477C-BB4A-F9B495A8C3AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E32B48C-C944-477C-BB4A-F9B495A8C3AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CA2A585-2385-46C7-9B0C-0BD11F205FD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CA2A585-2385-46C7-9B0C-0BD11F205FD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CA2A585-2385-46C7-9B0C-0BD11F205FD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CA2A585-2385-46C7-9B0C-0BD11F205FD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2224366-5957-4047-9EE8-EE7C45DC7EA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2224366-5957-4047-9EE8-EE7C45DC7EA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2224366-5957-4047-9EE8-EE7C45DC7EA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2224366-5957-4047-9EE8-EE7C45DC7EA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FA1B47F-999A-4B24-97B8-10C232109FA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FA1B47F-999A-4B24-97B8-10C232109FA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FA1B47F-999A-4B24-97B8-10C232109FA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FA1B47F-999A-4B24-97B8-10C232109FA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -145,6 +163,9 @@ Global
 		{EB80831A-431C-4CEC-AC41-8E5163E4B857} = {BBAFEB1E-93C0-4C7E-8E0A-026BB05C88EC}
 		{21FD76C3-D615-4CB1-84AF-74BFAF5EEFD1} = {BBAFEB1E-93C0-4C7E-8E0A-026BB05C88EC}
 		{4E32B48C-C944-477C-BB4A-F9B495A8C3AD} = {BBAFEB1E-93C0-4C7E-8E0A-026BB05C88EC}
+		{7CA2A585-2385-46C7-9B0C-0BD11F205FD7} = {BBAFEB1E-93C0-4C7E-8E0A-026BB05C88EC}
+		{C2224366-5957-4047-9EE8-EE7C45DC7EA4} = {BBAFEB1E-93C0-4C7E-8E0A-026BB05C88EC}
+		{4FA1B47F-999A-4B24-97B8-10C232109FA3} = {BBAFEB1E-93C0-4C7E-8E0A-026BB05C88EC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3125D461-08F4-4071-AAE5-1038EF84A360}

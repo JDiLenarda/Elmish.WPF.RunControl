@@ -1,15 +1,14 @@
 ﻿open System
 open Elmish
 open Elmish.WPF
-
 open OpenDialog.Views
 open System.Globalization
 open System.Windows
 
-let cultures = [ CultureInfo.CurrentCulture.Name ; "fr-FR" ; "en-GB" ; "en-US" ; "es-ES" ; "ru-RU" ; "ja-JA" ; "zh-CN" ; "it-IT" ; "de-DE" ] 
-               |> List.distinct
-               |> List.sort
-
+let cultures =
+  [ "fr-FR" ; "en-GB" ; "en-US" ; "es-ES" ; "ru-RU" ; "ja-JA" ; "zh-CN" ; "it-IT" ; "de-DE" ; CultureInfo.CurrentCulture.Name ]
+  |> List.distinct
+  |> List.sort
 
 type Model = {  Time: DateTime
                 Culture: CultureInfo }
@@ -19,15 +18,16 @@ type Message =
     | ChangeCulture of CultureInfo
     | Nothing
 
-let init () = { Time = DateTime.Now ; Culture = CultureInfo.CurrentCulture }, Cmd.none
+let init () = { Time = DateTime.Now ; Culture = CultureInfo.CurrentCulture }
 
 let update msg model =
     match msg with
-    | Tick dateTime ->  {model with Time = DateTime.Now }, Cmd.none
-    | ChangeCulture cultureInfo -> { model with Culture = cultureInfo }, Cmd.none
-    | Nothing -> model, Cmd.none
+    | Tick dateTime ->  {model with Time = DateTime.Now }
+    | ChangeCulture cultureInfo -> { model with Culture = cultureInfo }
+    | Nothing -> model
 
 let mainWindow = new MainWindow()
+
 (*  When performed in the command part of the loop, such a call blocks the update loop and let the messages queuing,
     unless you run it in an async mode. Also, it has to be done in the application thread dispatcher.
     When performed from a Binding.cmd, it automatically run asynchronously in the WPF dispatch loop.
@@ -47,32 +47,30 @@ let reset dispatch =
     if res = MessageBoxResult.Yes then 
         ChangeCulture CultureInfo.CurrentCulture |> dispatch
 
-#if EXPERIMENTAL_BRANCH
 type SubModel = CultureInfo
 type SubMessage = | SubChangeCulture of CultureInfo
 let callSelfLoopDialog culture dispatch =
     let init () = culture
-    let update msg _ = match msg with | SubChangeCulture culture -> culture
+    let update (SubChangeCulture newCulture) _ = newCulture
     let bindings _ _ =
         [ "Cultures" |> Binding.oneWay (fun _ -> cultures)
-          "SelectedCulture" |> Binding.twoWay (fun (m:SubModel) -> m.Name) (fun v _ -> CultureInfo.CreateSpecificCulture v |> SubChangeCulture) ]
+          "SelectedCulture" |> Binding.twoWay (fun (m:SubModel) -> m.Name)
+                                              (fun v _ -> CultureInfo.CreateSpecificCulture v |> SubChangeCulture) ]
     Program.mkSimple init update bindings
     |> Program.withConsoleTrace
     |> Window.showDialog (new CultureSelector())
     |> function
     | (true,model) -> ChangeCulture model |> dispatch
     | (false,_) -> ()
-#endif
 
 let bindings _ dispatch =
     [   "TimeStamp" |> Binding.oneWay (fun m -> m.Time.ToString("F", m.Culture))
         "Cultures" |> Binding.oneWay (fun _ -> cultures)
-        "SelectedCulture" |> Binding.twoWay (fun m -> m.Culture.Name) (fun v _ -> CultureInfo.CreateSpecificCulture v |> ChangeCulture)
+        "SelectedCulture" |> Binding.twoWay (fun m -> m.Culture.Name)
+                                            (fun v _ -> CultureInfo.CreateSpecificCulture v |> ChangeCulture)
         "CallSameLoopDialog" |> Binding.cmd (fun m -> callSameLoopDialog m dispatch ; Nothing)
         "Reset" |> Binding.cmd (fun _ -> reset dispatch ; Nothing)
-#if EXPERIMENTAL_BRANCH
         "CallSelfLoopDialog" |> Binding.cmd (fun m -> callSelfLoopDialog m.Culture dispatch ; Nothing)
-#endif
     ]
 
 let timerTick dispatch =
@@ -82,9 +80,7 @@ let timerTick dispatch =
 
 [<EntryPoint;STAThread>]
 let main argv = 
-    Program.mkProgram init update bindings
+    Program.mkSimple init update bindings
     |> Program.withSubscription (fun _ -> Cmd.ofSub timerTick)
     |> Program.withConsoleTrace
     |> Program.runWindow (mainWindow)
-
-       
