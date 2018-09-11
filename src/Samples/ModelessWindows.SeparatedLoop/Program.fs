@@ -3,7 +3,6 @@ open Elmish
 open Elmish.WPF
 open ModelessWindows.Views
 open System.Collections.Generic
-open System.Windows
 
 type Person =
   { Id: Guid
@@ -25,6 +24,12 @@ module Person =
     | ChangeNickName nickName -> { model with NickName = nickName }
     | ChangeFirstName firstname -> { model with FirstName = firstname }
     | ChangeLastName lastname -> { model with LastName = lastname }
+
+  let bindings () =
+    [ "Id" |> Binding.oneWay (fun m -> m.Id)
+      "NickName" |> Binding.twoWay (fun m -> m.NickName) (fun v _ -> ChangeNickName v)
+      "FirstName" |> Binding.twoWay (fun m -> m.FirstName) (fun v _ -> ChangeFirstName v)
+      "LastName" |> Binding.twoWay (fun m -> m.LastName) (fun v _ -> ChangeLastName v)  ]
   
 type Crowd = { Persons: Person list }
 
@@ -35,7 +40,7 @@ type CrowdMsg =
 let init () =
   { Persons = [ Person.init "JDiLenarda" "Julien" "Di Lenarda"
                 Person.init "cmeeren" "Christer" "Van der Meeren"
-                Person.init "giorgiohome" "?" "?"
+                Person.init "giuliohome" "?" "?"
                 Person.init "JohnStov" "John" "Stovin"
                 Person.init "2sComplement" "Justin" "Sacks" ] }
 
@@ -54,18 +59,14 @@ let mainWindow = new MainWindow()
 let bindings _ dispatch =
   let editors = new Dictionary<Guid,PeopleEditorSubmit>()
 
+  let closeEditor id = editors.[id].Close()
+  let dispatchUpdate = Update >> dispatch
+
   let rec personBindings () =
-    [ "Id" |> Binding.oneWay (fun m -> m.Id)
-      "NickName" |> Binding.twoWay (fun m -> m.NickName) (fun v _ -> ChangeNickName v)
-      "FirstName" |> Binding.twoWay (fun m -> m.FirstName) (fun v _ -> ChangeFirstName v)
-      "LastName" |> Binding.twoWay (fun m -> m.LastName) (fun v _ -> ChangeLastName v)
-      "CallEditor" |> Binding.cmd (fun m -> callEditor m ; Nothing)
-      "Submitable" |> Binding.oneWay (fun _ -> Visibility.Visible)
-      "Submit" |> Binding.cmd (fun m -> dispatch <| Update m ; Nothing)
-      "SubmitAndClose" |> Binding.cmd (fun m ->
-                                          dispatch <| Update m
-                                          (editors.[m.Id]).Close()
-                                          Nothing)    ]
+    Person.bindings ()
+    |> List.append  [ "CallEditor" |> Binding.cmd (fun m -> callEditor m ; Nothing)
+                      "Submit" |> Binding.cmd (fun m -> dispatchUpdate m ; Nothing)
+                      "SubmitAndClose" |> Binding.cmd (fun m -> dispatchUpdate m ; closeEditor m.Id ; Nothing)    ]
   and callEditor person =
     let init () = person
     let update = Person.update
@@ -73,6 +74,7 @@ let bindings _ dispatch =
 
     if not (editors.ContainsKey person.Id) then
       let editor = new PeopleEditorSubmit ()
+      editor.Owner <- mainWindow
       editor.Closed.Add (fun _ -> editors.Remove person.Id |> ignore)
       Program.mkSimple init update bindings
       |> Program.bindFrameWorkElement editor
@@ -84,8 +86,7 @@ let bindings _ dispatch =
   [ "Persons" |> Binding.subModelSeq (fun m -> m.Persons |> List.sortBy (fun m -> m.NickName))
                                      (fun sm -> sm.Id)
                                      personBindings
-                                     PersonMessage
-  ]
+                                     PersonMessage  ]
 
 [<EntryPoint;STAThread>]
 let main argv = 

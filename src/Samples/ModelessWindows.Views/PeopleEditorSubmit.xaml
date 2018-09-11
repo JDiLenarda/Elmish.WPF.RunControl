@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModelessWindows.Views"
         mc:Ignorable="d"
-        Title="People editor" Height="180.78" Width="526.879" >
+        Title="People editor" Height="180.78" Width="526.879" WindowStyle="ToolWindow" >
   <Grid >
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="2*"/>
