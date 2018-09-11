@@ -8,8 +8,8 @@ open System.ComponentModel
 open System.Windows
 open Elmish.WPF
 
-type [<AllowNullLiteral>] IGetInder =
-  abstract member GetIndexer: string -> (obj -> obj) option
+type [<AllowNullLiteral>] IGetIndex =
+  abstract member GetIndexGetter: string -> (obj -> obj) option
 
 /// Represents all necessary data used in an active binding.
 type Binding<'model, 'msg> =
@@ -344,8 +344,8 @@ and [<AllowNullLiteral>] ViewModel<'model, 'msg>
     // subsequent get which may may return the old value
     false
 
-  interface IGetInder with
-    member __.GetIndexer name =
+  interface IGetIndex with
+    member __.GetIndexGetter name =
       match bindings.TryGetValue name with
       | false, _ ->
           log "[VM] GetIndexer FAILED: Property %s doesn't exist" name

@@ -5,24 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModelessWindows.Views"
         mc:Ignorable="d"
-        Title="People editor" Height="138.78" Width="442.212" >
-    <Grid >
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="3*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+        Title="People editor" Height="138.78" Width="442.212" WindowStyle="ToolWindow">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="2*"/>
+      <ColumnDefinition Width="3*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
       <RowDefinition/>
+      <RowDefinition/>
+      <RowDefinition/>                  
+      <RowDefinition/>                        
     </Grid.RowDefinitions>
-        <Label Content="Nick Name"/>
-        <TextBox Text="{Binding NickName}" Grid.Column="2" Margin="3"/>
-        <Label Content="First Name" Grid.Row="1"/>
-        <TextBox Text="{Binding FirstName}" Grid.Column="2" Grid.Row="1" Margin="3"/>
-        <Label Content="Last Name" Grid.Row="2"/>
-        <TextBox Text="{Binding LastName}" Grid.Column="2" Grid.Row="2" Margin="3"/>
-        <TextBox Text="{Binding Id, Mode=OneWay}" IsEnabled="False" Grid.Row="3" Grid.ColumnSpan="2" Margin="3"/>
-    </Grid>
+    <Label Content="Nick Name"/>
+    <TextBox Text="{Binding NickName, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Margin="3"/>
+    <Label Content="First Name" Grid.Row="1"/>
+    <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Grid.Row="1" Margin="3"/>
+    <Label Content="Last Name" Grid.Row="2"/>
+    <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Grid.Row="2" Margin="3"/>
+    <TextBox Text="{Binding Id, Mode=OneWay}" IsEnabled="False" Grid.Row="3" Grid.ColumnSpan="2" Margin="3"/>
+  </Grid>
 </Window>
