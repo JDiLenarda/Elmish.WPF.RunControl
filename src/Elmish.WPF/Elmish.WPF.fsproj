@@ -11,7 +11,6 @@
     <Compile Include="Binding.fs" />
     <Compile Include="ViewModel.fs" />
     <Compile Include="Program.fs" />
-    <Compile Include="Window.fs" />
     <Compile Include="DataContext.fs" />
     <None Include="paket.references" />
   </ItemGroup>

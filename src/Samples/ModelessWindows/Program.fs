@@ -3,19 +3,18 @@ open Elmish
 open Elmish.WPF
 open ModelessWindows.Views
 open System.Collections.Generic
+open System.Windows
 
-type Person =
-  { Id: Guid
-    NickName:   string
-    FirstName:  string
-    LastName:   string }
-type Persons =
-  | Nothing
-  | ChangeNickName of string
-  | ChangeFirstName of string
-  | ChangeLastName of string
+module Ctx = DataContext
+
+type Person = { Id: Guid ; NickName: string ; FirstName: string ; LastName: string }
 
 module Person =
+  type Message =
+    | Nothing
+    | ChangeNickName of string
+    | ChangeFirstName of string
+    | ChangeLastName of string
   let init nick first last =  { Id = Guid.NewGuid() ; NickName = nick ; FirstName = first ; LastName = last  }
   let update msg model =
     match msg with
@@ -23,7 +22,6 @@ module Person =
     | ChangeNickName nickName -> { model with NickName = nickName }
     | ChangeFirstName firstname -> { model with FirstName = firstname }
     | ChangeLastName lastname -> { model with LastName = lastname }
-
   let bindings () =
     [ "Id" |> Binding.oneWay (fun m -> m.Id)
       "NickName" |> Binding.twoWay (fun m -> m.NickName) (fun v _ -> ChangeNickName v)
@@ -32,57 +30,69 @@ module Person =
   
 type Crowd = { Persons: Person list }
 
-type CrowdMsg =
-  | PersonMessage of Id: Guid * Msg: Persons
+module Crowd =
+  type Message =
+    | Refresh
+    | PersonMessage of Id: Guid * Msg: Person.Message
+    | Add of Person
+    | Delete of Person
+  let init () =
+    { Persons = [ Person.init "JDiLenarda" "Julien" "Di Lenarda"
+                  Person.init "cmeeren" "Christer" "Van der Meeren"
+                  Person.init "giuliohome" "?" "?"
+                  Person.init "JohnStov" "John" "Stovin"
+                  Person.init "2sComplement" "Justin" "Sacks"   ] }
+  let update msg model =
+    let deletePerson crowd person =
+      { crowd with Persons = crowd.Persons |> List.filter (fun p -> p.Id <> person.Id) }
+    let insertOrUpdatePerson crowd person  =
+      { crowd with Persons = crowd.Persons |> List.filter (fun p -> p.Id <> person.Id) |> List.append [ person ] }
+    match msg with
+    | Refresh -> model
+    | PersonMessage (id,msg') ->
+      match msg' with
+      | Person.Nothing -> model
+      | _ ->  model.Persons
+              |> List.find (fun p -> p.Id = id)
+              |> Person.update msg' 
+              |> insertOrUpdatePerson model  
+    | Delete person -> deletePerson model person
+    | Add person -> insertOrUpdatePerson model person
 
-let init () =
-  { Persons = [ Person.init "JDiLenarda" "Julien" "Di Lenarda"
-                Person.init "cmeeren" "Christer" "Van der Meeren"
-                Person.init "giuliohome" "?" "?"
-                Person.init "JohnStov" "John" "Stovin"
-                Person.init "2sComplement" "Justin" "Sacks"   ] }
+ open Crowd
 
-let update msg model =
-  let updatePerson person crowd =
-    { crowd with Persons =
-                    crowd.Persons
-                    |> List.filter (fun p -> p.Id <> person.Id)
-                    |> List.append [ person ] }
-  match msg with  
-  | PersonMessage (id,pplMsg) ->
-    let person = model.Persons |> List.find (fun p -> p.Id = id)
-    let person' = Person.update pplMsg person
-    updatePerson person' model  
-
-let mainWindow = new MainWindow()
-
-let bindings _ _ =
-  let editors = new Dictionary<_,_>()
+let bindings window _ _ =
+  let editors = new Dictionary<Guid,PeopleEditor>()
 
   let callEditor person =
     if not (editors.ContainsKey person.Id) then
       let editor = new PeopleEditor ()
-      editor.Owner <- mainWindow
+      editor.Owner <- window
       editor.Closed.Add (fun _ -> editors.Remove person.Id |> ignore)
-      editor.DataContext <- DataContext.subContextFromDescription [ DataContext.KeyedProperty ("Persons", string person.Id) ] mainWindow.DataContext
-      // I wish this could be written like this : editor.DataContext <- DataContext.subContext ("Persons[" + person.Id + "]") mainWindow.DataContext
+      window |> Ctx.ofWindow |> Ctx.findAbstractPath [ Ctx.KeyedProperty ("Persons", string person.Id) ] |> Ctx.bindTo editor
+      // I wish this could be written like this :
+      //  parent |> Ctx.ofWindow |> Ctx.findPath ("Persons[" + (string person.Id) + "]") |> Ctx.bindTo editor
       editors.Add(person.Id, editor)
       editors.[person.Id].Show()
     else
       editors.[person.Id].Activate() |> ignore
 
-  let bindings () =
-    Person.bindings ()
-    |> List.append [  "CallEditor" |> Binding.cmd (fun m -> callEditor m ; Nothing) ]
-                      //"PersonContext" |> Binding.oneWay (fun m -> DataContext.subContextFromDescription [ DataContext.KeyedProperty ("Persons", string m.Id) ] mainWindow.DataContext) ]
+  let confirmDelete person =
+    MessageBox.Show("do you want to delete " + person.NickName + " ?", "Delete person", MessageBoxButton.YesNo) |> function
+    | MessageBoxResult.Yes -> (if editors.ContainsKey person.Id then editors.[person.Id].Close()) ; Delete person
+    | _ -> Refresh
 
-  [ "Persons" |> Binding.subModelSeq (fun m -> m.Persons |> List.sortBy (fun m -> m.NickName))
+  [ "Persons" |> Binding.subModelSeq (fun m -> m.Persons |> List.sortByDescending (fun m -> m.NickName))
                                      (fun sm -> sm.Id)
-                                     bindings
-                                     PersonMessage    ]
+                                     Person.bindings 
+                                     PersonMessage
+    "AddPerson" |> Binding.cmd (fun _ -> Crowd.Add (Person.init "New person" "" ""))
+    "DeletePerson" |> Binding.paramCmd (fun v _ -> Ctx.currentModel<_> v |> confirmDelete)
+    "EditPerson" |> Binding.paramCmd (fun v m -> callEditor (Ctx.currentModel<_>  v) ; Refresh)    ]
 
 [<EntryPoint;STAThread>]
-let main argv = 
-    Program.mkSimple init update bindings
+let main argv =
+    let mainWindow = new MainWindow()
+    Program.mkSimple Crowd.init Crowd.update (bindings mainWindow)
     |> Program.withConsoleTrace
     |> Program.runWindow mainWindow

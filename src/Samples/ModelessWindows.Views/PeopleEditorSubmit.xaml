@@ -31,8 +31,12 @@
         <ColumnDefinition />
         <ColumnDefinition />
       </Grid.ColumnDefinitions>
-      <Button Grid.Column="1" Content="Submit" Command="{Binding Submit}" Margin="3" />
-      <Button Grid.Column="2" Content="Submit and close" Command="{Binding SubmitAndClose}" Margin="3" />
+      <Button Grid.Column="1" Content="Submit" Margin="3"
+              Command="{Binding Source={x:Static Application.Current}, Path=MainWindow.DataContext.Submit}"
+              CommandParameter="{Binding}" />
+      <Button Grid.Column="2" Content="Submit and close" Margin="3"
+              Command="{Binding Source={x:Static Application.Current}, Path=MainWindow.DataContext.SubmitAndClose}"
+              CommandParameter="{Binding}"/>
     </Grid>
     <TextBox Text="{Binding Id, Mode=OneWay}" Grid.Row="4" Grid.ColumnSpan="2" Margin="3"/>
   </Grid>

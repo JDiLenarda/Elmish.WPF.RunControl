@@ -5,21 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ModelessWindows.Views"
         mc:Ignorable="d"
-        Title="People who took part to issue #24" Height="450" Width="800">
+        Title="People who took part to issue #24" Height="427.273" Width="759.091">
     <Grid>
-    <Grid.Resources>
-      <DataTemplate x:Key="Edit">
-        <Button Content="Edit..." Command="{Binding CallEditor}" />
-      </DataTemplate>
-    </Grid.Resources>
-    <DataGrid ItemsSource="{Binding Persons}" IsReadOnly="True" Margin="10" AutoGenerateColumns="False">
-      <DataGrid.Columns>
-        <DataGridTextColumn Binding="{Binding NickName}" Header="Nick name" Width="2*"/>
-        <DataGridTextColumn Binding="{Binding FirstName}" Header="First name" Width="2*"/>
-        <DataGridTextColumn Binding="{Binding LastName}" Header="Last name" Width="2*"/>
-        <DataGridTemplateColumn CellTemplate="{StaticResource Edit}" Width="1*"/>
-        <DataGridTextColumn Binding="{Binding Id}" Header="Guid" Width="3*"/>
-      </DataGrid.Columns>
+        <Grid.Resources>
+            <DataTemplate x:Key="Edit">
+                <Button Content="Edit..."
+                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:MainWindow}, Path=DataContext.EditPerson}"
+                        CommandParameter="{Binding}" />
+            </DataTemplate>
+            <DataTemplate x:Key="Delete">
+                <Button Content="Delete..."
+                        Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:MainWindow}, Path=DataContext.DeletePerson}"
+                        CommandParameter="{Binding}"/>
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <DataGrid ItemsSource="{Binding Persons}" IsReadOnly="True" Margin="10,25,10,10" AutoGenerateColumns="False" Grid.ColumnSpan="2">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding NickName}" Header="Nick name" Width="2*"/>
+                <DataGridTextColumn Binding="{Binding FirstName}" Header="First name" Width="2*"/>
+                <DataGridTextColumn Binding="{Binding LastName}" Header="Last name" Width="2*"/>
+                <DataGridTemplateColumn CellTemplate="{StaticResource Edit}" Width="0.8*"/>
+                <DataGridTemplateColumn CellTemplate="{StaticResource Delete}" Width="0.8*"/>
+                <DataGridTextColumn Binding="{Binding Id}" Header="Guid" Width="3*"/>
+            </DataGrid.Columns>
         </DataGrid>
+        <Button Content="Add" Command="{Binding AddPerson}" Height="20" Margin="0,0,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Grid.Column="1"/>
     </Grid>
 </Window>
