@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OpenDialog.Views"
         mc:Ignorable="d"
-        Title="Select a culture" Height="160.168" Width="234.304">
+        Title="Select a culture" Height="160.168" Width="234.304"
+        WindowStyle="ToolWindow">
     <Grid >
         <Button Content="OK" IsDefault="True" Margin="156,85,0,0" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" Width="60" Click="Button_Click" RenderTransformOrigin="0.544,-0.644"/>
         <Button Content="Cancel" IsCancel="True" Margin="60,85,0,0" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" Width="77"/>

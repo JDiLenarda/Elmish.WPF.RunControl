@@ -8,8 +8,10 @@ open System.ComponentModel
 open System.Windows
 open Elmish.WPF
 
-type [<AllowNullLiteral>] IGetIndex =
-  abstract member GetIndexGetter: string -> (obj -> obj) option
+/// to help to unbox ViewModel without the pain of generics casts
+type [<AllowNullLiteral>] IBoxedViewModel =
+  abstract GetIndexGetter: string -> (obj -> obj) option
+  abstract CurrentModel: obj
 
 /// Represents all necessary data used in an active binding.
 type Binding<'model, 'msg> =
@@ -214,6 +216,7 @@ and [<AllowNullLiteral>] ViewModel<'model, 'msg>
             false
     | SubModelSeq (vms, getModels, getId, getBindings, toMsg) ->
         let newSubModels = getModels newModel
+
         Application.Current.Dispatcher.Invoke(fun () ->
           // Prune and update existing models
           let newLookup = Dictionary<_,_>()
@@ -344,14 +347,15 @@ and [<AllowNullLiteral>] ViewModel<'model, 'msg>
     // subsequent get which may may return the old value
     false
 
-  interface IGetIndex with
+  interface IBoxedViewModel with
     member __.GetIndexGetter name =
       match bindings.TryGetValue name with
       | false, _ ->
-          log "[VM] GetIndexer FAILED: Property %s doesn't exist" name
+          log "[VM] GetIndexGetter FAILED: Property %s is not bound to a Binding.subModelSeq" name
           None
       | true, SubModelSeq (_, _, getId, _, _) -> Some getId
       | _ -> None
+    member __.CurrentModel = box currentModel
 
   interface INotifyPropertyChanged with
     [<CLIEvent>]
