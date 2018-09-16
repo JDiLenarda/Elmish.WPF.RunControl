@@ -5,7 +5,7 @@ open ModelessWindows.Views
 open System.Collections.Generic
 open System.Windows
 
-module Ctx = DataContext
+module VM = Elmish.WPF.ViewModel
 
 type Person = { Id: Guid ; NickName: string ; FirstName: string ; LastName: string }
 
@@ -80,25 +80,23 @@ let bindings window _ dispatch =
   let isEditorOpen id = editors.ContainsKey id
 
   let confirmDelete person =
-    MessageBox.Show("do you want to delete " + person.NickName + " ?", "Delete person", MessageBoxButton.YesNo) |> function
-    | MessageBoxResult.Yes -> (if editors.ContainsKey person.Id then editors.[person.Id].Close()) ; Delete person
-    | _ -> Refresh
+    MessageBox.Show("do you want to delete " + person.NickName + " ?", "Delete person", MessageBoxButton.YesNo)
+    |> function | MessageBoxResult.Yes -> (if editors.ContainsKey person.Id then editors.[person.Id].Close()) ; Delete person
+                | _ -> Refresh
 
-  [ "Persons" |> Binding.subModelSeq (fun m -> m.Persons |> List.sortBy (fun m -> m.NickName))
-                                      (fun sm -> sm.Id)
-                                      Person.bindings
-                                      PersonMessage
+  [ "Persons" |> Binding.subModelSeq (fun m -> m.Persons |> List.sortByDescending (fun m -> m.NickName))
+                                     (fun sm -> sm.Id)
+                                     Person.bindings
+                                     PersonMessage
     "AddPerson" |> Binding.cmd (fun _ -> callEditor (Person.init "New person" "" "") ; Refresh)
-    "EditPerson" |> Binding.paramCmd (fun v m ->  let person = Ctx.currentModel<_> v
-                                                  callEditor person
-                                                  Refresh) 
-    "DeletePerson" |> Binding.paramCmdIf (fun v _ -> Ctx.currentModel<_> v |> confirmDelete)
-                                         (fun v _ -> (isNull v) || not (isEditorOpen (Ctx.currentModel<_> v).Id))
+    "EditPerson" |> Binding.paramCmd (fun v _ ->  callEditor (VM.currentModel<_> v) ; Refresh) 
+    "DeletePerson" |> Binding.paramCmdIf (fun v _ -> v |> VM.currentModel<_> |> confirmDelete)
+                                         (fun v _ -> (isNull v) || not (isEditorOpen (VM.currentModel<_> v).Id))
                                          false
-    "Submit" |> Binding.paramCmd (fun v m -> InsertOrUpdate <| Ctx.currentModel<_> v )
-    "SubmitAndClose" |> Binding.paramCmd (fun v _ ->  let person = Ctx.currentModel<_> v
+    "Submit" |> Binding.paramCmd (fun v m -> v |> VM.currentModel<_> |> InsertOrUpdate )
+    "SubmitAndClose" |> Binding.paramCmd (fun v _ ->  let person = VM.currentModel<_> v
                                                       closeEditor person.Id
-                                                      InsertOrUpdate <| person )  ]
+                                                      InsertOrUpdate person )  ]
 [<EntryPoint;STAThread>]
 let main argv =
     let mainWindow = new MainWindow()

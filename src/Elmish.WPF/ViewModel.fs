@@ -2,15 +2,16 @@ namespace Elmish.WPF.Internal
 
 open System
 open System.Dynamic
+open System.Collections
 open System.Collections.Generic
 open System.Collections.ObjectModel
 open System.ComponentModel
 open System.Windows
 open Elmish.WPF
+open System.Collections.Specialized
 
 /// to help to unbox ViewModel without the pain of generics casts
 type [<AllowNullLiteral>] IBoxedViewModel =
-  abstract GetIndexGetter: string -> (obj -> obj) option
   abstract CurrentModel: obj
 
 /// Represents all necessary data used in an active binding.
@@ -316,7 +317,7 @@ and [<AllowNullLiteral>] ViewModel<'model, 'msg>
           | ParamCmd cmd ->
               box cmd
           | SubModel (vm, _, _, _) -> !vm |> Option.toObj |> box
-          | SubModelSeq (vms, _, _, _, _) -> box vms
+          | SubModelSeq (vms, _, getId, _, _) -> box <| ViewModelCollection(vms, getId) 
         true
 
   override __.TrySetMember (binder, value) =
@@ -348,13 +349,6 @@ and [<AllowNullLiteral>] ViewModel<'model, 'msg>
     false
 
   interface IBoxedViewModel with
-    member __.GetIndexGetter name =
-      match bindings.TryGetValue name with
-      | false, _ ->
-          log "[VM] GetIndexGetter FAILED: Property %s is not bound to a Binding.subModelSeq" name
-          None
-      | true, SubModelSeq (_, _, getId, _, _) -> Some getId
-      | _ -> None
     member __.CurrentModel = box currentModel
 
   interface INotifyPropertyChanged with
@@ -371,3 +365,14 @@ and [<AllowNullLiteral>] ViewModel<'model, 'msg>
       match errors.TryGetValue propName with
       | true, err -> upcast [err]
       | false, _ -> upcast []
+
+and ViewModelCollection(vms:ObservableCollection<_>, getId) =
+  inherit DynamicObject()
+  override __.TryGetIndex (binder,indexes,result) =
+    result <- (vms :> seq<_>) |> Seq.find (fun x -> string (getId x.CurrentModel) = string indexes.[0] )
+    true
+  interface INotifyCollectionChanged with
+    [<CLIEvent>]
+    member __.CollectionChanged = vms.CollectionChanged
+  interface IEnumerable with
+    member __.GetEnumerator() = vms.GetEnumerator() :> IEnumerator

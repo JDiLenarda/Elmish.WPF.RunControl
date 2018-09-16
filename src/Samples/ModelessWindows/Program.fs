@@ -5,7 +5,7 @@ open ModelessWindows.Views
 open System.Collections.Generic
 open System.Windows
 
-module Ctx = DataContext
+module VM = Elmish.WPF.ViewModel
 
 type Person = { Id: Guid ; NickName: string ; FirstName: string ; LastName: string }
 
@@ -69,26 +69,27 @@ let bindings window _ _ =
       let editor = new PeopleEditor ()
       editor.Owner <- window
       editor.Closed.Add (fun _ -> editors.Remove person.Id |> ignore)
-      window |> Ctx.ofWindow |> Ctx.findAbstractPath [ Ctx.KeyedProperty ("Persons", string person.Id) ] |> Ctx.bindTo editor
+      //window |> VM.ofWindow |> VM.findAbstractPath [ VM.KeyedProperty ("Persons", string person.Id) ] |> VM.bindTo editor
       // I wish this could be written like this :
-      //  parent |> Ctx.ofWindow |> Ctx.findPath ("Persons[" + (string person.Id) + "]") |> Ctx.bindTo editor
+      window |> VM.ofWindow |> VM.resolvePath ("Persons[" + (string person.Id) + "]") |> VM.bindTo editor
+      //window |> VM.ofWindow |> VM.resolvePath ("Persons[0]") |> VM.bindTo editor
       editors.Add(person.Id, editor)
       editors.[person.Id].Show()
     else
       editors.[person.Id].Activate() |> ignore
 
   let confirmDelete person =
-    MessageBox.Show("do you want to delete " + person.NickName + " ?", "Delete person", MessageBoxButton.YesNo) |> function
-    | MessageBoxResult.Yes -> (if editors.ContainsKey person.Id then editors.[person.Id].Close()) ; Delete person
-    | _ -> Refresh
+    MessageBox.Show("do you want to delete " + person.NickName + " ?", "Delete person", MessageBoxButton.YesNo)
+    |> function | MessageBoxResult.Yes -> (if editors.ContainsKey person.Id then editors.[person.Id].Close()) ; Delete person
+                | _ -> Refresh
 
   [ "Persons" |> Binding.subModelSeq (fun m -> m.Persons |> List.sortByDescending (fun m -> m.NickName))
                                      (fun sm -> sm.Id)
                                      Person.bindings 
                                      PersonMessage
     "AddPerson" |> Binding.cmd (fun _ -> Crowd.Add (Person.init "New person" "" ""))
-    "DeletePerson" |> Binding.paramCmd (fun v _ -> Ctx.currentModel<_> v |> confirmDelete)
-    "EditPerson" |> Binding.paramCmd (fun v m -> callEditor (Ctx.currentModel<_>  v) ; Refresh)    ]
+    "DeletePerson" |> Binding.paramCmd (fun v _ -> v |> VM.currentModel<_> |> confirmDelete)
+    "EditPerson" |> Binding.paramCmd (fun v m -> callEditor (VM.currentModel<_>  v) ; Refresh)    ]
 
 [<EntryPoint;STAThread>]
 let main argv =
