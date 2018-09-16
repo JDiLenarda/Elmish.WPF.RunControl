@@ -4,11 +4,22 @@
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="TestPathSolver.fs" />
     <Compile Include="TestStub.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Elmish" Version="2.0.0-beta-4" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Elmish.WPF\Elmish.WPF.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

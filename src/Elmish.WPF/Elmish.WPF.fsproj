@@ -10,14 +10,16 @@
     <Compile Include="Config.fs" />
     <Compile Include="Binding.fs" />
     <Compile Include="ViewModel.fs" />
+    <Compile Include="ViewModelModule.fs" />
     <Compile Include="Program.fs" />
-    <Compile Include="DataContext.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
